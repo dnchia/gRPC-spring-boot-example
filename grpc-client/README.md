@@ -18,6 +18,9 @@ mvn clean install
 to have installed in the local repository.
 
 **To execute, grpc-server must be up and running.**
+In GrpcClientApplication exists a method call that can be uncommented to execute with the jar.
+
+However, the use cases are on the tests.
 
 #### Execute using Maven:
 ```
