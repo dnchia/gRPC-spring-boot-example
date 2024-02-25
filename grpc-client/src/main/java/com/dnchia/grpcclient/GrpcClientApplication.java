@@ -1,12 +1,9 @@
 package com.dnchia.grpcclient;
 
-import com.dnchia.grpc.CalculatorRequest;
-import com.dnchia.grpc.CalculatorResponse;
-import com.dnchia.grpc.CalculatorServiceGrpc;
-import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
+import com.dnchia.grpcclient.dtos.CalculatorResponseDTO;
+import com.dnchia.grpcclient.model.Operator;
+import com.dnchia.grpcclient.services.GrpcClientService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @Slf4j
@@ -22,26 +19,24 @@ public class GrpcClientApplication {
 	 * created, in order to be used from any REST API, etc...
 	 */
 	public static void main(String[] args) {
-		log.info("Opening channel...");
+		// Uncomment this line if do you want to execute the example from this class
+		// Note that the tests will fail if this line is uncommented. The tests provide more use cases
+		// This client needs the GRPC server to be up and running
+		// runStaticExecution();
+	}
 
-		ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", 9090)
-				.usePlaintext()
-				.build();
+	private static void runStaticExecution() {
+		// Manually instantiated, but prepared and easily integrable using Spring injection
+		// It is manually instantiated here to keep the client example simple
+		GrpcClientService service = new GrpcClientService();
+		service.setGrpcHost("localhost");
+		service.setGrpcPort(9090);
 
-		log.info("Channel opened");
+		float firstOperand = 10f;
+		float secondOperand = 2f;
+		Operator operator = Operator.DIVIDE;
 
-		CalculatorServiceGrpc.CalculatorServiceBlockingStub stub = CalculatorServiceGrpc.newBlockingStub(channel);
-
-		CalculatorResponse response = stub.calculator(CalculatorRequest.newBuilder()
-				.setOperand1(12.5f)
-				.setOperand2(1.5f)
-				.setOperator("/")
-				.build());
-
-		log.info("Response is: {}", response.getResult());
-
-		channel.shutdown();
-
-		log.info("Channel closed");
+		CalculatorResponseDTO responseDTO = service.calculate(firstOperand, secondOperand, operator);
+		log.info(responseDTO.toString());
 	}
 }
